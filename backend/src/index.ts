@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import rutasPreguntas from "./routes/rutasPreguntas";
 import rutasResultados from "./routes/rutasResultados";
 import rutasTablero from "./routes/rutasTablero";
+import { manejarErrorAutenticacion } from "./middleware/autenticacion";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ aplicacion.use(express.json());
 aplicacion.use("/api/preguntas", rutasPreguntas);
 aplicacion.use("/api/resultados", rutasResultados);
 aplicacion.use("/api/tablero", rutasTablero);
+aplicacion.use(manejarErrorAutenticacion);
 
 mongoose
   .connect(
