@@ -30,6 +30,11 @@ export interface RespuestaEnviada {
   valor: number;
 }
 
+export interface PerfilUsuario {
+  correo?: string;
+  nombre?: string;
+}
+
 export interface Resultado {
   _id: string;
   puntajeTotal: number;
@@ -55,7 +60,8 @@ export interface UsuarioConResultados {
 
 export const enviarTest = async (
   token: string,
-  respuestas: RespuestaEnviada[]
+  respuestas: RespuestaEnviada[],
+  perfilUsuario?: PerfilUsuario
 ): Promise<Resultado> => {
   const respuesta = await fetch(`${URL_API}/resultados`, {
     method: "POST",
@@ -63,7 +69,7 @@ export const enviarTest = async (
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ respuestas }),
+    body: JSON.stringify({ respuestas, perfilUsuario }),
   });
 
   if (!respuesta.ok) {

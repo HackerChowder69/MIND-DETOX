@@ -4,6 +4,9 @@ import Resultado from "../models/Resultado";
 import Pregunta from "../models/Pregunta";
 import { calcularDiagnostico } from "../lib/puntuacion";
 
+const normalizarTexto = (valor?: unknown) =>
+  typeof valor === "string" ? valor.trim() : "";
+
 export const enviarTest = async (
   req: Request,
   res: Response
@@ -17,14 +20,16 @@ export const enviarTest = async (
   try {
     const carga = (req as any).auth?.payload;
     const usuarioId = carga?.sub;
+    const perfilUsuario = req.body.perfilUsuario || {};
     const nombreUsuario =
-      carga?.["https://minddetox.com/name"] ||
-      carga?.name ||
-      carga?.nickname ||
-      "";
+      normalizarTexto(carga?.["https://minddetox.com/name"]) ||
+      normalizarTexto(carga?.name) ||
+      normalizarTexto(carga?.nickname) ||
+      normalizarTexto(perfilUsuario.nombre);
     const correoUsuario =
-      carga?.["https://minddetox.com/email"] ||
-      carga?.email ||
+      normalizarTexto(carga?.["https://minddetox.com/email"]).toLowerCase() ||
+      normalizarTexto(carga?.email).toLowerCase() ||
+      normalizarTexto(perfilUsuario.correo).toLowerCase() ||
       "sin-correo";
 
     const { respuestas } = req.body;
@@ -62,6 +67,14 @@ export const enviarTest = async (
     });
 
     await nuevoResultado.save();
+
+    if (correoUsuario !== "sin-correo") {
+      await Resultado.updateMany(
+        { usuarioId, correoUsuario: "sin-correo" },
+        { $set: { correoUsuario, nombreUsuario } }
+      );
+    }
+
     res.status(201).json(nuevoResultado);
   } catch (error) {
     res.status(500).json({ error: "Error al guardar resultado" });

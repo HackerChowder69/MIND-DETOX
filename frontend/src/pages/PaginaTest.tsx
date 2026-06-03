@@ -9,7 +9,7 @@ import { OPCIONES_ESCALA } from "../lib/puntuacion";
 import { guardarRutaPostLogin, obtenerTokenApi } from "../lib/autenticacion";
 
 export default function PaginaTest() {
-  const { getAccessTokenSilently, loginWithRedirect, isAuthenticated } =
+  const { getAccessTokenSilently, loginWithRedirect, isAuthenticated, user } =
     useAuth0();
   const navegar = useNavigate();
   const [respuestas, setRespuestas] = useState<Record<string, number>>({});
@@ -30,7 +30,10 @@ export default function PaginaTest() {
       const respuestasFormateadas = Object.entries(respuestas).map(
         ([preguntaId, valor]) => ({ preguntaId, valor })
       );
-      return enviarTest(token, respuestasFormateadas);
+      return enviarTest(token, respuestasFormateadas, {
+        correo: user?.email,
+        nombre: user?.name || user?.nickname,
+      });
     },
     onSuccess: (resultado) => {
       toast.success("Test completado");
