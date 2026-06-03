@@ -4,6 +4,12 @@ const extraerMensajeError = async (respuesta: Response) => {
   try {
     const data = await respuesta.json();
 
+    if (typeof data?.mensaje === "string") {
+      return typeof data?.error === "string"
+        ? `${data.error}: ${data.mensaje}`
+        : data.mensaje;
+    }
+
     if (typeof data?.error === "string") return data.error;
 
     if (Array.isArray(data?.errores) && data.errores.length > 0) {
