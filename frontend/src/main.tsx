@@ -16,6 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      cacheLocation="localstorage"
       onRedirectCallback={(appState) => {
         const rutaDestino = appState?.returnTo || obtenerRutaRetorno();
         window.history.replaceState({}, document.title, rutaDestino);

@@ -33,7 +33,6 @@ export const obtenerTokenApi = (
   getAccessTokenSilently: ObtenerTokenSilencioso
 ) =>
   getAccessTokenSilently({
-    cacheMode: "off",
     authorizationParams: {
       audience: AUTH0_AUDIENCE,
       scope: "openid profile email",
