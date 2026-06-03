@@ -10,6 +10,7 @@ import {
 } from "../../api/preguntas";
 import type { Pregunta } from "../../api/preguntas";
 import FormularioPregunta from "../../forms/FormularioPregunta";
+import { obtenerTokenApi } from "../../lib/autenticacion";
 
 export default function PaginaPreguntas() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -28,14 +29,14 @@ export default function PaginaPreguntas() {
     queryKey: ["todasLasPreguntas"],
     enabled: isAuthenticated,
     queryFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return obtenerTodasLasPreguntas(token);
     },
   });
 
   const mutacionCrear = useMutation({
     mutationFn: async (datos: { texto: string; orden: number }) => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return crearPregunta(token, datos);
     },
     onSuccess: () => {
@@ -53,7 +54,7 @@ export default function PaginaPreguntas() {
       orden: number;
       activa: boolean;
     }) => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return actualizarPregunta(token, datos.id, {
         texto: datos.texto,
         orden: datos.orden,
@@ -70,7 +71,7 @@ export default function PaginaPreguntas() {
 
   const mutacionEliminar = useMutation({
     mutationFn: async (id: string) => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return eliminarPregunta(token, id);
     },
     onSuccess: () => {

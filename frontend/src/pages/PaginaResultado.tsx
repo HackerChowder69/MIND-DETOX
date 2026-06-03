@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { obtenerMisResultados } from "../api/resultados";
 import { configuracionDiagnostico } from "../lib/puntuacion";
+import { obtenerTokenApi } from "../lib/autenticacion";
 
 export default function PaginaResultado() {
   const { id } = useParams();
@@ -11,7 +12,7 @@ export default function PaginaResultado() {
   const { data: resultados, isLoading: cargando } = useQuery({
     queryKey: ["misResultados"],
     queryFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return obtenerMisResultados(token);
     },
   });

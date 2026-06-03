@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { obtenerPreguntasActivas } from "../api/preguntas";
 import { enviarTest } from "../api/resultados";
 import { OPCIONES_ESCALA } from "../lib/puntuacion";
-import { guardarRutaPostLogin } from "../lib/autenticacion";
+import { guardarRutaPostLogin, obtenerTokenApi } from "../lib/autenticacion";
 
 export default function PaginaTest() {
   const { getAccessTokenSilently, loginWithRedirect, isAuthenticated } =
@@ -26,7 +26,7 @@ export default function PaginaTest() {
 
   const mutacionEnvio = useMutation({
     mutationFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       const respuestasFormateadas = Object.entries(respuestas).map(
         ([preguntaId, valor]) => ({ preguntaId, valor })
       );

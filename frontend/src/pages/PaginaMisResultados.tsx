@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { obtenerMisResultados } from "../api/resultados";
 import { configuracionDiagnostico } from "../lib/puntuacion";
-import { guardarRutaPostLogin } from "../lib/autenticacion";
+import { guardarRutaPostLogin, obtenerTokenApi } from "../lib/autenticacion";
 
 const formatearFecha = (fecha: string) =>
   new Intl.DateTimeFormat("es-MX", {
@@ -20,7 +20,7 @@ export default function PaginaMisResultados() {
     queryKey: ["misResultados"],
     enabled: isAuthenticated,
     queryFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return obtenerMisResultados(token);
     },
   });

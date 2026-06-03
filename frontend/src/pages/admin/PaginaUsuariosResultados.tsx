@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { obtenerUsuariosConResultados } from "../../api/resultados";
 import { configuracionDiagnostico } from "../../lib/puntuacion";
+import { obtenerTokenApi } from "../../lib/autenticacion";
 
 const formatearFecha = (fecha: string) =>
   new Intl.DateTimeFormat("es-MX", {
@@ -23,7 +24,7 @@ export default function PaginaUsuariosResultados() {
     queryKey: ["usuariosConResultados"],
     enabled: isAuthenticated,
     queryFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return obtenerUsuariosConResultados(token);
     },
   });

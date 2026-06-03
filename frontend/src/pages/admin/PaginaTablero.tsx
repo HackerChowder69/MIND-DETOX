@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { obtenerEstadisticasTablero } from "../../api/resultados";
 import { configuracionDiagnostico } from "../../lib/puntuacion";
 import type { NivelDiagnostico } from "../../lib/puntuacion";
+import { obtenerTokenApi } from "../../lib/autenticacion";
 
 export default function PaginaTablero() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -16,7 +17,7 @@ export default function PaginaTablero() {
     queryKey: ["estadisticasTablero"],
     enabled: isAuthenticated,
     queryFn: async () => {
-      const token = await getAccessTokenSilently();
+      const token = await obtenerTokenApi(getAccessTokenSilently);
       return obtenerEstadisticasTablero(token);
     },
   });
