@@ -14,6 +14,15 @@ const issuerBaseURL = normalizarUrlAuth0(
   process.env.AUTH0_ISSUER_BASE_URL || process.env.AUTH0_DOMAIN
 );
 
+const obtenerValoresEnv = (valor?: string) =>
+  (valor || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+const normalizarCorreo = (valor?: string) =>
+  valor?.trim().toLowerCase() || "";
+
 export const requiereAutenticacion = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL,
@@ -26,16 +35,33 @@ export const requiereAdmin = (
   siguiente: NextFunction
 ): void => {
   const carga = (req as any).auth?.payload;
-  const correo = carga?.["https://minddetox.com/email"] || carga?.email;
-  const sub = carga?.sub;
-  const adminSub = process.env.ADMIN_SUB;
+  const correo = normalizarCorreo(
+    carga?.["https://minddetox.com/email"] || carga?.email
+  );
+  const sub = typeof carga?.sub === "string" ? carga.sub.trim() : "";
+  const correosAdmin = obtenerValoresEnv(process.env.CORREO_ADMIN).map(
+    normalizarCorreo
+  );
+  const subsAdmin = obtenerValoresEnv(process.env.ADMIN_SUB);
 
   const esAdminPorCorreo =
-    !!correo && correo === process.env.CORREO_ADMIN;
-  const esAdminPorSub = !!sub && !!adminSub && sub === adminSub;
+    !!correo && correosAdmin.includes(correo);
+  const esAdminPorSub = !!sub && subsAdmin.includes(sub);
 
   if (!esAdminPorCorreo && !esAdminPorSub) {
-    res.status(403).json({ error: "Acceso denegado" });
+    console.error("Acceso admin denegado:", {
+      sub,
+      correo,
+      tieneAdminSubConfigurado: subsAdmin.length > 0,
+      tieneCorreoAdminConfigurado: correosAdmin.length > 0,
+    });
+
+    res.status(403).json({
+      error: "Acceso denegado",
+      mensaje:
+        "Tu usuario autenticado no coincide con CORREO_ADMIN ni ADMIN_SUB configurados en el backend.",
+      usuario: { sub, correo },
+    });
     return;
   }
   siguiente();
