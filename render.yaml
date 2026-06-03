@@ -31,7 +31,7 @@ services:
     runtime: static
     rootDir: frontend
     buildCommand: npm ci && npm run build
-    staticPublishPath: ./frontend/dist
+    staticPublishPath: dist
     buildFilter:
       paths:
         - frontend/**
@@ -55,4 +55,3 @@ services:
         sync: false
       - key: VITE_ADMIN_EMAIL
         sync: false
-
